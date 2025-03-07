@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Location Verification</title>
+    <script>
+        function checkLocation() {
+            if (!navigator.geolocation) {
+                alert("Geolocation is not supported by your browser.");
+                return;
+            }
+
+            navigator.geolocation.getCurrentPosition(success, error);
+
+            function success(position) {
+                let userLat = position.coords.latitude;
+                let userLon = position.coords.longitude;
+
+                // Define the allowed location
+                let allowedLat = 37.5873065;
+                let allowedLon = 127.0323432;
+                let allowedRadius = 0.5; // Allowed radius in km
+
+                let distance = getDistanceFromLatLonInKm(userLat, userLon, allowedLat, allowedLon);
+
+                if (distance <= allowedRadius) {
+                    window.location.href = "https://example.com/secure-content"; // Change to your real page
+                } else {
+                    alert("Access Denied: You are not in the correct location.");
+                }
+            }
+
+            function error() {
+                alert("Location access denied. Please enable GPS.");
+            }
+
+            function getDistanceFromLatLonInKm(lat1, lon1, lat2, lon2) {
+                let R = 6371; // Radius of the Earth in km
+                let dLat = (lat2 - lat1) * Math.PI / 180;
+                let dLon = (lon2 - lon1) * Math.PI / 180;
+                let a = Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                        Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                let c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                return R * c;
+            }
+        }
+    </script>
+</head>
+<body>
+    <h2>Verify Your Location</h2>
+    <button onclick="checkLocation()">Check Location</button>
+</body>
+</html>
